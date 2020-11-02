@@ -1,6 +1,6 @@
 from math import *
-
 import random
+
 def plane_angle_and_length(a, b):
     '''
     it finds all I need for my program please DON'T TOUCH
@@ -37,14 +37,14 @@ def iter(coord1, coord2, angle_and_length_list, full_length):
     return new_list[:-1]
 
 
-def fractal_wall(time, length, vertex_number, iter_number, omega, variation1, variation2):
+def fractal_wall(time, length, vertex_number, iter_number, frequency, variation1, variation2):
     '''
 
     :param time: time or another smooth changing variable
     :param length: length of wall from first to last point
     :param vertex_number: number of vertexes between first and last point
     :param iter_number: depth of fractal recursion
-    :param omega: cycle frequency
+    :param frequency: cycle frequency
     :param variation1: random number from 0 to 1
     :param variation2: random number from 0 to 1
     :return: coords of all points in fractal
@@ -53,8 +53,8 @@ def fractal_wall(time, length, vertex_number, iter_number, omega, variation1, va
 
     l0 = length / (vertex_number + 1)
     for i in range(vertex_number):
-        x = (l0 ) * sin(time*omega)*cos(omega * time*(variation1*cos(sin(i*2))) + i * 2 * pi / vertex_number) + l0 * (i + 1)
-        y = (l0 ) * sin(omega * time*(variation2*cos(i+3)) + i * 2 * pi / vertex_number)
+        x = (l0 ) * sin(time * frequency) * cos(frequency * time * (variation1 * cos(sin(i * 2))) + i * 2 * pi / vertex_number) + l0 * (i + 1)
+        y = (l0 ) * sin(frequency * time * (variation2 * cos(i + 3)) + i * 2 * pi / vertex_number)
         initial_list.append([x, y])
     initial_list.append([length, 0])
     initial_angle_and_length_list = []
@@ -74,8 +74,8 @@ def fractal_wall(time, length, vertex_number, iter_number, omega, variation1, va
 
 if __name__ == '__main__':
     import tkinter
-    v1 = random.randint(-100,100)/100
-    v2 = random.randint(-100,100)/100
+    v1 = 0.7
+    v2 = 0.2
     master = tkinter.Tk()
     canvas = tkinter.Canvas(master, height=600, width=600)
     lines = []
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     time = 0
     all_coords = []
     list_of_lines = []
-    lines_coords = fractal_wall(time, 300, 3, 2, 0.1, v1, v2)
+    lines_coords = fractal_wall(time, 400, 6, 2, 0.02, v1, v2)
     for i in range(len(lines_coords) - 1):
         list_of_lines.append(canvas.create_line([lines_coords[i][0] + 100, lines_coords[i][1] + 300],
                                                 [lines_coords[i + 1][0] + 100, lines_coords[i + 1][1] + 300]))
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     def game():
         global time
         time += 1
-        lines_coords = fractal_wall(time, 300, 3, 2, 0.1, v1, v2)
+        lines_coords = fractal_wall(time, 400, 6, 2, 0.02, v1, v2)
         all_coords.append(lines_coords)
         for i in range(len(lines_coords) - 1):
             canvas.coords(list_of_lines[i],[lines_coords[i][0]+100, lines_coords[i][1] + 300,
