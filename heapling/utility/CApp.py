@@ -1,4 +1,4 @@
-import utility.cevent as cevent
+import utility.CEvent as cevent
 import pygame
 
 # change CApp into
