@@ -8,6 +8,6 @@ class Wall(PhysicalObject):
 
 	def display(self, view):
 		for i in range(len(self.dots)-1):
-			view.draw_line(BLACK, self.dots[i].x, self.dots[i].y,\
-				self.dots[i+1].x, self.dots[i+1].y)
+			view.draw_line(self.dots[i].x, self.dots[i].y,\
+				self.dots[i+1].x, self.dots[i+1].y, BLACK)
 
