@@ -1,5 +1,5 @@
 #Base game object
 
 class GameObject:
-	def display(view):
+	def display(self, view):
 		pass
