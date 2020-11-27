@@ -5,7 +5,7 @@ from pygame.draw import *
 
 pygame.init()
 screen = pygame.display.set_mode((794, 1123))
-surface = pygame.Surface((794,1123))
+surface = pygame.Surface((794, 1123))
 view = view.View(screen)
 FPS = 30
 WHITE = (255, 255, 255)
@@ -22,12 +22,12 @@ i = 0
 while not finished:
     i += 1
     clock.tick(FPS)
-    player.step(0.00001*FPS)
+    player.step(0.00001 * FPS)
     rect(screen, WHITE, (0, 0, 794, 1123))
-    player.append(dots[(i//100)%4])
+    player.append(dots[(i // 100) % 4])
     wall.display(view)
     for dot in dots:
-    	dot.display(view)
+        dot.display(view)
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
