@@ -1,6 +1,7 @@
-from math import *
+from physicalobject import PhysicalObject
 import random
-
+from math import*
+BLACK = (0, 0, 0)
 def plane_angle_and_length(a, b):
     '''
     it finds all I need for my program please DON'T TOUCH
@@ -15,8 +16,6 @@ def plane_angle_and_length(a, b):
         return [(asin(y / l) if x >= 0 else (pi - asin(y / l))), l]
     else:
         return 0, 0
-
-
 def iter(coord1, coord2, angle_and_length_list, full_length):
     '''
     creates new iteration between two points
@@ -36,74 +35,62 @@ def iter(coord1, coord2, angle_and_length_list, full_length):
         new_list.append([new_x, new_y])
     return new_list[:-1]
 
+class Wall(PhysicalObject):
+    def __init__(self, first_coords, last_coords, depth, number_dots):
+		'''
 
-def fractal_wall(time, length, vertex_number, iter_number, frequency, variation1, variation2):
-    '''
+		:param first_coords: coordinates of first point
+		:param last_coords: coordinates of last point
+		:param depth: number of fractal iterations
+		:param number_dots: number of inner points of original poligonal chain
+		'''
 
-    :param time: time or another smooth changing variable
-    :param length: length of wall from first to last point
-    :param vertex_number: number of vertexes between first and last point
-    :param iter_number: depth of fractal recursion
-    :param frequency: cycle frequency
-    :param variation1: random number from 0 to 1
-    :param variation2: random number from 0 to 1
-    :return: coords of all points in fractal
-    '''
-    initial_list = [[0, 0]]
+		self.first_coords = first_coords
+		self.last_coords = last_coords
+		self.number_dots = number_dots
+		self.depth = depth
+		self.variation1 = random.random()
+		self.variation2 = random.random()
 
-    l0 = length / (vertex_number + 1)
-    for i in range(vertex_number):
-        x = (l0 ) * sin(time * frequency) * cos(frequency * time * (variation1 * cos(sin(i * 2))) + i * 2 * pi / vertex_number) + l0 * (i + 1)
-        y = (l0 ) * sin(frequency * time * (variation2 * cos(i + 3)) + i * 2 * pi / vertex_number)
-        initial_list.append([x, y])
-    initial_list.append([length, 0])
-    initial_angle_and_length_list = []
-    for i in range(vertex_number + 1):
-        initial_angle_and_length_list.append(plane_angle_and_length(initial_list[i], initial_list[i + 1]))
-    previous_list = initial_list
-    for i in range(iter_number):
-        new_list = []
-        for k in range(len(previous_list) - 1):
-            new_dots = iter(previous_list[k], previous_list[k + 1], initial_angle_and_length_list, length)
-            for j in new_dots:
-                new_list.append(j)
-        previous_list = new_list
-        previous_list.append([length, 0])
-    return previous_list
+		self.time = 0
+		self.dots = [[0,0]]
+    def step(self, dt):
+		self.time += dt
+		iter_number = self.depth
+		time = self.time
+		initial_list = [[0, 0]]
+		frequency = 1
+		variation1 = self.variation1
+		variation2 = self.variation2
+		length = self.last_coords[0]-self.first_coords[0]
+		vertex_number = self.number_dots
+		l0 = length / (vertex_number + 1)
+		for i in range(vertex_number):
+			x = (l0) * sin(time * frequency) * cos(
+				frequency * time * (variation1 * cos(sin(i * 2))) + i * 2 * pi / vertex_number) + l0 * (i + 1)
+			y = (l0) * sin(frequency * time * (variation2 * cos(i + 3)) + i * 2 * pi / vertex_number)
+			initial_list.append([x, y])
+		initial_list.append([length, 0])
+		initial_angle_and_length_list = []
+		for i in range(vertex_number + 1):
+			initial_angle_and_length_list.append(plane_angle_and_length(initial_list[i], initial_list[i + 1]))
+		previous_list = initial_list
+		for i in range(iter_number):
+			new_list = []
+			for k in range(len(previous_list) - 1):
+				new_dots = iter(previous_list[k], previous_list[k + 1], initial_angle_and_length_list, length)
+				for j in new_dots:
+					new_list.append(j)
+			previous_list = new_list
+			previous_list.append([length, 0])
+		self.dots = []
+		for dots in previous_list:
+			self.dots.append([dots[0]+self.first_coords[0], dots[1]+self.first_coords[1]])
+		return previous_list
+    def display(self, view):
+        for i in range(len(self.dots) - 1):
+            view.draw_line(self.dots[i].x, self.dots[i].y, self.dots[i + 1].x, self.dots[i + 1].y, BLACK)
 
 
 if __name__ == '__main__':
-    import tkinter
-    v1 = 0.7
-    v2 = 0.2
-    master = tkinter.Tk()
-    canvas = tkinter.Canvas(master, height=600, width=600)
-    lines = []
-    iters = 3
-    vertex = 3
-    time = 0
-    all_coords = []
-    list_of_lines = []
-    lines_coords = fractal_wall(time, 400, 6, 2, 0.02, v1, v2)
-    for i in range(len(lines_coords) - 1):
-        list_of_lines.append(canvas.create_line([lines_coords[i][0] + 100, lines_coords[i][1] + 300],
-                                                [lines_coords[i + 1][0] + 100, lines_coords[i + 1][1] + 300]))
-
-    def game():
-        global time
-        time += 1
-        lines_coords = fractal_wall(time, 400, 6, 2, 0.02, v1, v2)
-        all_coords.append(lines_coords)
-        for i in range(len(lines_coords) - 1):
-            canvas.coords(list_of_lines[i],[lines_coords[i][0]+100, lines_coords[i][1] + 300,
-                                                    lines_coords[i + 1][0]+100, lines_coords[i + 1][1] + 300])
-
-        canvas.update()
-
-        master.after(1, game)
-
-
-    canvas.pack()
-    game()
-    master.mainloop()
-
+    pass
