@@ -42,7 +42,7 @@ class TestController(Controller):
         self.wall.display(self.view)
         return True
 
-    def on_loop(self, i):
+    def on_loop(self):
         self.player.step(0.00005 * FPS)
 
     def on_render(self):
@@ -51,7 +51,6 @@ class TestController(Controller):
         self.view.update()
 
     def execute(self):
-        i = 0
 
         if self.on_init() == False:
             self.running = False
@@ -62,8 +61,7 @@ class TestController(Controller):
                 if event.type == pg.QUIT:
                     self.running = False
             self.on_render()
-            self.on_loop(i)
-            i = i+1
+            self.on_loop()
 
 if __name__ == "__main__":
 
