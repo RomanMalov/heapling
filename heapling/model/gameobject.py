@@ -2,8 +2,11 @@
 
 class GameObject:
 
-	def display(self, view):
+	def display(self):
 		pass
 
-	def step(self, dt):
+	def step(self, DT):
+		pass
+
+	def get_cords(self):
 		pass
