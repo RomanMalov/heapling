@@ -1,4 +1,3 @@
-
 from model.gameobject import GameObject
 
 

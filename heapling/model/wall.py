@@ -2,8 +2,13 @@ from model.physicalobject import PhysicalObject
 import random
 from math import *
 import pygame
+from utility.vector import Vector
+
+
 KEY = (0, 0, 0)
 BLACK = (0, 0, 1)
+
+
 def plane_angle_and_length(a, b):
 	'''
 	it finds all I need for my program please DON'T TOUCH
@@ -18,6 +23,8 @@ def plane_angle_and_length(a, b):
 		return [(asin(y / l) if x >= 0 else (pi - asin(y / l))), l]
 	else:
 		return 0, 0
+
+
 def iter(coord1, coord2, angle_and_length_list, full_length):
 	'''
 	creates new iteration between two points
@@ -36,6 +43,7 @@ def iter(coord1, coord2, angle_and_length_list, full_length):
 		new_y = old_y + sin(angle + angle0) * new_length
 		new_list.append([new_x, new_y])
 	return new_list[:-1]
+
 
 class Wall(PhysicalObject):
 	def __init__(self, x, y, first_coords, last_coords, depth, number_dots):
@@ -106,7 +114,7 @@ class Wall(PhysicalObject):
 		return self.dots
 
 	def get_cords(self):
-		return (self.x, self.y)
+		return Vector(self.x, self.y)
 
 if __name__ == '__main__':
 	pass
