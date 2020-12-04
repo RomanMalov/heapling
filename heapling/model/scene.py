@@ -43,16 +43,16 @@ class Scene(GameObject):
 				if self.heap.intersect(dot):
 					self.renew(dot)
 				if dot.get_cords().x<self.view_point.x-dot.get_r():
-					print("Foo")
 					self.renew(dot)
 
 			if isinstance(object, Wall):
 				self.heap.collide(object, dt)
-
-
-			surface = object.display()
-			pos = object.get_cords() - self.view_point - Vector(surface.get_width(),surface.get_height())/2
-			screen.blit(surface, (pos.x, pos.y))
+				surface = object.display()
+				screen.blit(surface, (0 - self.view_point.x, 0 - self.view_point.y))
+			else:
+				surface = object.display()
+				pos = object.get_cords() - self.view_point - Vector(surface.get_width(),surface.get_height())/2
+				screen.blit(surface, (pos.x, pos.y))
 			#pygame.draw.circle(screen, (0, 255, 0), (round(object.get_cords()[0]),round(object.get_cords()[1])), 10)
 
 		return screen
@@ -63,8 +63,8 @@ class Scene(GameObject):
 				Dot(Vector(850, 450), 30),
 				Dot(Vector(850, 650), 25),
 				Dot(Vector(800, 600), 15)]
-		wall = Wall(Vector(500, 500), Vector(1500, 900), 1, 2, 50)
-		wall.step(0.001)
+		wall = Wall(Vector(0, 600), Vector(1500, 600), 3, 2, 50)
+		wall2 = Wall(Vector(1500, 600), Vector(3000, 600), 3, 2, 50)
 
 		self.heap = Heap(Dot(Vector(400, 500), 20), Vector(0, 0), 0)
 
@@ -72,6 +72,7 @@ class Scene(GameObject):
 			self.append(dot)
 
 		self.append(self.heap)
+		self.append(wall2)
 		self.append(wall)
 
 	def renew(self, dot):
@@ -87,6 +88,3 @@ class Scene(GameObject):
 
 	def heap_jump(self):
 		self.heap.jump()
-
-
-		

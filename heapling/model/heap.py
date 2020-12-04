@@ -7,11 +7,11 @@ from array import array
 from utility.vector import Vector
 
 KEY = (0, 0, 0)
-GRAV_ACCELERATION = 140
+GRAV_ACCELERATION = 200
 V_JUMP = Vector(120, -200)
 K = 0.99
 
-FORCE_CONSTANT = 1
+FORCE_CONSTANT = 9000000
 class Heap(PhysicalObject):
 
 	v: Vector
@@ -42,9 +42,9 @@ class Heap(PhysicalObject):
 		for dot in self.dots:
 
 			dot_pos = dot.get_cords()
+			dot_pos = Vector(pos.x + (dot_pos.x - pos.x)*math.cos(dt*self.w) - (dot_pos.y - pos.y)*math.sin(dt*self.w),
+							 pos.y + (dot_pos.x - pos.x)*math.sin(dt*self.w) + (dot_pos.y - pos.y)*math.cos(dt*self.w))
 			dot_pos += self.v*dt
-
-			dot_pos += Vector(dot_pos.y - pos.y, pos.x - dot_pos.x)*dt*self.w
 
 			dot.set_cords(dot_pos)
 
@@ -68,7 +68,8 @@ class Heap(PhysicalObject):
 			dot_force = Vector(0,0)
 			for point in points:
 				l_2 = (point.x-dot_coords.x)**2+(point.y-dot_coords.y)**2+0.01 #because of division by zero
-				dot_force += FORCE_CONSTANT*dot.get_r()**2/l_2*(point-dot_coords)
+				if math.sqrt(l_2) < dot.r:
+					dot_force += FORCE_CONSTANT/math.sqrt(l_2)*(dot_coords-point)
 			dot_moment = (dot_coords - self.get_cords()).cross(dot_force)
 			glob_force += dot_force
 			glob_moment += dot_moment
@@ -76,6 +77,7 @@ class Heap(PhysicalObject):
 		a = glob_force/self.m
 		self.v += a*dt
 		self.w += betta*dt
+
 	def append(self, dot):
 		dot_m = dot.get_m()
 
