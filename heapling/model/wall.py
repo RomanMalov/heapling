@@ -46,7 +46,7 @@ def iter(coord1, coord2, angle_and_length_list, full_length):
 
 
 class Wall(PhysicalObject):
-	def __init__(self, x, y, first_coords, last_coords, depth, number_dots):
+	def __init__(self, first_coords, last_coords, depth, number_dots, amplitude):
 		'''
 
 		:param first_coords: coordinates of first point
@@ -54,7 +54,7 @@ class Wall(PhysicalObject):
 		:param depth: number of fractal iterations
 		:param number_dots: number of inner points of original poligonal chain
 		'''
-
+		self.amplitude = amplitude
 		self.first_coords = first_coords
 		self.last_coords = last_coords
 		self.number_dots = number_dots
@@ -64,12 +64,14 @@ class Wall(PhysicalObject):
 
 		self.time = 0
 		self.dots = [[0,0]]
-		self.x = x
-		self.y = y
-		self.width = abs(self.first_coords[0] - self.last_coords[0])
-		self.height = abs(self.first_coords[0] - self.last_coords[0])
 
+		self.width = abs(self.first_coords.x - self.last_coords.x)
+		self.height = abs(self.first_coords.y - self.last_coords.y)
+		self.all_iterations = []
+		for i in range(depth):
+			self.all_iterations.append([first_coords, last_coords])
 	def step(self, dt):
+		self.all_iterations = []
 		self.time += dt
 		iter_number = self.depth
 		time = self.time
@@ -77,13 +79,13 @@ class Wall(PhysicalObject):
 		frequency = 2
 		variation1 = self.variation1
 		variation2 = self.variation2
-		length = self.last_coords[0]-self.first_coords[0]
+		length = self.last_coords.x-self.first_coords.x
 		vertex_number = self.number_dots
 		l0 = length / (vertex_number + 1)
 		for i in range(vertex_number):
-			x = (l0) * sin(time * frequency) * cos(
-				frequency * time * (variation1 * cos(sin(i * 2))) + i * 2 * pi / vertex_number) + l0 * (i + 1)
-			y = (l0) * sin(frequency * time * (variation2 * cos(i + 3)) + i * 2 * pi / vertex_number)
+			x = self.amplitude * cos(
+				frequency * time * variation1 + i * 2 * pi / vertex_number) + l0 * (i + 1)
+			y = self.amplitude * sin(frequency * time * variation2  + i * 2 * pi / vertex_number)
 			initial_list.append([x, y])
 		initial_list.append([length, 0])
 		initial_angle_and_length_list = []
@@ -98,23 +100,24 @@ class Wall(PhysicalObject):
 					new_list.append(j)
 			previous_list = new_list
 			previous_list.append([length, 0])
-		self.dots = []
-		for dots in previous_list:
-			self.dots.append([dots[0]+self.first_coords[0], dots[1]+self.first_coords[1]])
-		return previous_list
+			vector_list = []
+			for i in previous_list:
+				vector_list.append(Vector(*i)+self.first_coords)
+			self.all_iterations.append(vector_list)
+		self.dots = vector_list
 
 	def display(self):
 		surf = pygame.Surface((4 * self.width, 4 * self.height))
 		surf.set_colorkey(KEY)
 		for i in range(len(self.dots) - 1):
-			pygame.draw.line(surf, BLACK, (self.dots[i][0]+2*self.width, self.dots[i][1]+2*self.height), (self.dots[i + 1][0]+2*self.width, self.dots[i + 1][1]+2*self.height))
+			pygame.draw.line(surf, BLACK, (self.dots[i].x+2*self.width, self.dots[i].y+2*self.height), (self.dots[i + 1].x+2*self.width, self.dots[i + 1].y+2*self.height))
 		return surf
 
-	def get_dots(self): #КОСТЫЛЬ переделать
-		return self.dots
+	def get_dots(self):
+		return self.all_iterations[0]
 
 	def get_cords(self):
-		return Vector(self.x, self.y)
+		return self.first_coords
 
 if __name__ == '__main__':
 	pass

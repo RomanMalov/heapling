@@ -11,7 +11,7 @@ GRAV_ACCELERATION = 140
 V_JUMP = Vector(120, -200)
 K = 0.99
 
-
+FORCE_CONSTANT = 1
 class Heap(PhysicalObject):
 
 	v: Vector
@@ -59,13 +59,23 @@ class Heap(PhysicalObject):
 				return True
 		return False
 
-	def collide(self, wall : Wall):
+	def collide(self, wall : Wall, dt):
 		points = wall.get_dots()
-		for point in points:
-			for dot in self.dots:
-				if dot.dist(point) < dot.get_r():
-					pass #текст
-
+		glob_moment = 0
+		glob_force = Vector(0,0)
+		for dot in self.dots:
+			dot_coords = dot.get_cords()
+			dot_force = Vector(0,0)
+			for point in points:
+				l_2 = (point.x-dot_coords.x)**2+(point.y-dot_coords.y)**2+0.01 #because of division by zero
+				dot_force += FORCE_CONSTANT*dot.get_r()**2/l_2*(point-dot_coords)
+			dot_moment = (dot_coords - self.get_cords()).cross(dot_force)
+			glob_force += dot_force
+			glob_moment += dot_moment
+		betta = glob_moment/self.get_I()
+		a = glob_force/self.m
+		self.v += a*dt
+		self.w += betta*dt
 	def append(self, dot):
 		dot_m = dot.get_m()
 

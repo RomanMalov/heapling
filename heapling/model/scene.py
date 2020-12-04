@@ -46,8 +46,9 @@ class Scene(GameObject):
 					print("Foo")
 					self.renew(dot)
 
-			if isinstance(object, Wall) and self.heap.collide(object):
-				pass
+			if isinstance(object, Wall):
+				self.heap.collide(object, dt)
+
 
 			surface = object.display()
 			pos = object.get_cords() - self.view_point - Vector(surface.get_width(),surface.get_height())/2
@@ -62,7 +63,7 @@ class Scene(GameObject):
 				Dot(Vector(850, 450), 30),
 				Dot(Vector(850, 650), 25),
 				Dot(Vector(800, 600), 15)]
-		wall = Wall(0, 0, (500, 500), (1500, 900), 1, 2)
+		wall = Wall(Vector(500, 500), Vector(1500, 900), 1, 2, 50)
 		wall.step(0.001)
 
 		self.heap = Heap(Dot(Vector(400, 500), 20), Vector(0, 0), 0)
