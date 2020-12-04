@@ -63,8 +63,8 @@ class Scene(GameObject):
 				Dot(Vector(850, 450), 30),
 				Dot(Vector(850, 650), 25),
 				Dot(Vector(800, 600), 15)]
-		wall = Wall(Vector(0, 600), Vector(1500, 600), 3, 2, 50)
-		wall2 = Wall(Vector(1500, 600), Vector(3000, 600), 3, 2, 50)
+		wall = Wall(Vector(0, 600), Vector(1500, 600), 3, 4, 50)
+		wall2 = Wall(Vector(1500, 600), Vector(3000, 600), 3, 4, 50)
 
 		self.heap = Heap(Dot(Vector(400, 500), 20), Vector(0, 0), 0)
 

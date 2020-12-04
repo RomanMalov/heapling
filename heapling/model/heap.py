@@ -11,7 +11,7 @@ GRAV_ACCELERATION = 200
 V_JUMP = Vector(120, -200)
 K = 0.99
 
-FORCE_CONSTANT = 9000000
+FORCE_CONSTANT = 900
 class Heap(PhysicalObject):
 
 	v: Vector
@@ -69,7 +69,7 @@ class Heap(PhysicalObject):
 			for point in points:
 				l_2 = (point.x-dot_coords.x)**2+(point.y-dot_coords.y)**2+0.01 #because of division by zero
 				if math.sqrt(l_2) < dot.r:
-					dot_force += FORCE_CONSTANT/math.sqrt(l_2)*(dot_coords-point)
+					dot_force += FORCE_CONSTANT*dot.get_r()**2/math.sqrt(l_2)*(dot_coords-point)
 			dot_moment = (dot_coords - self.get_cords()).cross(dot_force)
 			glob_force += dot_force
 			glob_moment += dot_moment
