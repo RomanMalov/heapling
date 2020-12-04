@@ -1,5 +1,5 @@
 import pygame 
-from random import randint
+from random import randint, random
 from model.gameobject import GameObject
 from model.dot import Dot
 from model.wall import Wall
@@ -9,6 +9,10 @@ from utility.vector import Vector
 from typing import List
 
 WHITE = (255, 255, 255)
+WALLS_COUNT = 3
+UPPER_WALL_Y = 250
+LOWER_WALL_Y = 650
+AMPLITUDE = 120
 
 
 class Scene(GameObject):
@@ -34,54 +38,83 @@ class Scene(GameObject):
 		self.view_point = self.view_point + self.v * dt
 		screen = pygame.Surface((self.width, self.height))
 		pygame.draw.rect(screen, WHITE, (0, 0, 1500, 1000))
+		heap = self.heap
 
 		for object in self.objects:
-			object.step(dt)
 
 			if isinstance(object, Dot):
 				dot = object
-				if self.heap.intersect(dot):
-					self.renew(dot)
+				if heap.intersect(dot):
+					self.remove(dot)
+					self.append(self.gen_rnd_dot())
+
 				if dot.get_cords().x<self.view_point.x-dot.get_r():
-					self.renew(dot)
+					self.remove(dot)
+					self.append(self.gen_rnd_dot())
 
 			if isinstance(object, Wall):
-				self.heap.collide(object, dt)
-				surface = object.display()
-				screen.blit(surface, (0 - self.view_point.x, 0 - self.view_point.y))
+				wall = object
+				heap_x_l = heap.get_cords().x - heap.get_r()
+				heap_x_r = heap.get_cords().x + heap.get_r()
+				wall_x_l = wall.get_cords().x
+				wall_x_r = wall.get_cords().x + wall.width
+				if 	(heap_x_l - wall_x_l) * (heap_x_l - wall_x_r) < 0 or (heap_x_r - wall_x_l) * (heap_x_r - wall_x_r) < 0 or heap_x_l - wall_x_l < 0 and heap_x_r - wall_x_r > 0:
+					heap.collide(wall, dt)
+				surface = wall.display()
+				screen.blit(surface, (wall_x_l - self.view_point.x, wall.get_cords().y - round(wall.height/2) - self.view_point.y))
+				if wall_x_r-self.view_point.x < 0:
+					delta = round(self.width/(WALLS_COUNT-1))
+					self.remove(wall)
+					wall = Wall(Vector(self.walls_num//2*delta, wall.get_cords().y), Vector((self.walls_num//2 + 1)*delta, wall.get_cords().y), 3, 3, AMPLITUDE)
+					self.append(wall)
+					wall.step(random())
+					self.walls_num += 1
 			else:
+				object.step(dt)
 				surface = object.display()
 				pos = object.get_cords() - self.view_point - Vector(surface.get_width(),surface.get_height())/2
 				screen.blit(surface, (pos.x, pos.y))
 			#pygame.draw.circle(screen, (0, 255, 0), (round(object.get_cords()[0]),round(object.get_cords()[1])), 10)
-
 		return screen
 
 	def start(self):
-		dots = [Dot(Vector(700, 600), 15),
-				Dot(Vector(750, 450), 20),
-				Dot(Vector(850, 450), 30),
-				Dot(Vector(850, 650), 25),
-				Dot(Vector(800, 600), 15)]
-		wall = Wall(Vector(0, 600), Vector(1500, 600), 3, 4, 50)
-		wall2 = Wall(Vector(1500, 600), Vector(3000, 600), 3, 4, 50)
+		delta = round(self.width/(WALLS_COUNT-1))
+		up_walls = [Wall(Vector(i*delta, UPPER_WALL_Y), Vector((i+1)*delta, UPPER_WALL_Y+100), 3, 3, AMPLITUDE) for i in range(WALLS_COUNT)]
+		down_walls = [Wall(Vector(i*delta, LOWER_WALL_Y), Vector((i+1)*delta, LOWER_WALL_Y+100), 3, 3, AMPLITUDE) for i in range(WALLS_COUNT)]
+		self.walls_num = WALLS_COUNT*2
 
-		self.heap = Heap(Dot(Vector(400, 500), 20), Vector(0, 0), 0)
+		self.heap = Heap(Dot(Vector(400, 500), 30), Vector(0, 0), 0)
 
+		for wall in up_walls:
+			wall.step(random()*10)
+			self.append(wall)
+		for wall in down_walls:
+			wall.step(random()*10)
+			self.append(wall)
+
+		dots = [self.gen_rnd_dot() for i in range(5)]
 		for dot in dots:
 			self.append(dot)
 
 		self.append(self.heap)
-		self.append(wall2)
-		self.append(wall)
 
-	def renew(self, dot):
-		self.remove(dot)
+	def gen_rnd_dot(self):
 		cords = Vector(randint(round(self.view_point.x+self.width/2), round(self.view_point.x+self.width)),
 				randint(round(self.view_point.y), round(self.view_point.y+self.height)))
-		dot = Dot(cords, dot.get_r())
-		print(cords)
-		self.append(dot)
+		dot = Dot(cords, randint(20, 60))
+		for obj in self.objects:
+			if isinstance(obj, Wall):
+				wall = obj
+				dot_x_l = dot.get_cords().x - dot.get_r()
+				dot_x_r = dot.get_cords().x + dot.get_r()
+				wall_x_l = wall.get_cords().x
+				wall_x_r = wall.get_cords().x + wall.width
+				if 	(dot_x_l - wall_x_l) * (dot_x_l - wall_x_r) < 0 or (dot_x_r - wall_x_l) * (dot_x_r - wall_x_r) < 0 or dot_x_l - wall_x_l < 0 and dot_x_r - wall_x_r > 0:
+					if dot.collide(wall):
+						return self.gen_rnd_dot()
+
+		return dot
+		
 
 	def get_cords(self):
 		return self.cords

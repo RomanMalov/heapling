@@ -66,7 +66,8 @@ class Wall(PhysicalObject):
 		self.dots = [[0,0]]
 
 		self.width = abs(self.first_coords.x - self.last_coords.x)
-		self.height = abs(self.first_coords.y - self.last_coords.y)
+		self.height = amplitude*3
+
 		self.all_iterations = []
 		for i in range(depth):
 			self.all_iterations.append([first_coords, last_coords])
@@ -107,10 +108,11 @@ class Wall(PhysicalObject):
 		self.dots = vector_list
 
 	def display(self):
-		surf = pygame.Surface((3000, 1000))
+		surf = pygame.Surface((self.width+100, self.height))
 		surf.set_colorkey(KEY)
 		for i in range(len(self.dots) - 1):
-			pygame.draw.line(surf, BLACK, (self.dots[i].x, self.dots[i].y), (self.dots[i + 1].x, self.dots[i + 1].y))
+			pygame.draw.line (surf, BLACK, (self.dots[i].x - self.get_cords().x, self.dots[i].y - self.get_cords().y + round(self.height/2)),
+							 (self.dots[i + 1].x - self.get_cords().x, self.dots[i + 1].y - self.get_cords().y + round(self.height/2)))
 		return surf
 
 	def get_dots(self):
