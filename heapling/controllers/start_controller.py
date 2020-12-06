@@ -1,0 +1,91 @@
+from controllers.controller import Controller
+from controllers.event import Event
+
+from utility.vector import Vector
+
+from view.view import View
+import pygame as pg
+
+from model.gui.button import Button
+from model.gui.image import Image
+from model.gameobject import GameObject
+
+from typing import List
+
+F10_KEY = 291
+
+class StartController(Controller):
+
+	def __init__(self, width=None, height=None):
+
+		View.init(width, height)
+		self.clock = pg.time.Clock()
+		self.FPS = 30
+
+		self.game_objects = []
+		self.running = False
+
+		self.click_event = Event()
+
+	def on_init(self):
+
+		self.game_objects.append((
+			Image("title.png", 0.25),
+			Vector(View.window.get_width() / 2, 200)
+		))
+
+		style = {"font-family": "SpaceInvaders", "font-size": 20}
+
+		pos1 = Vector(View.window.get_width() / 2, View.window.get_height() / 2 - 100)
+		self.game_objects.append((Button("Play the game", pos1, style), pos1))
+
+		pos2 = Vector(View.window.get_width() / 2, View.window.get_height() / 2 + 100)
+		self.game_objects.append((Button("Options", pos2, style), pos2))
+
+		pos3 = Vector(View.window.get_width() / 2, View.window.get_height() / 2 + 300)
+		quit_button = Button("Quit your hopeless actions",pos3, style)
+		self.game_objects.append((quit_button, pos3))
+
+		that = self
+
+		def quit_button_func(pos: Vector):
+			if quit_button.is_inside(pos):
+				that.running = False
+
+		self.click_event.addHandler(quit_button_func)
+
+		return True
+
+	def on_loop(self):
+		pass
+
+	def on_render(self):
+		View.update()
+		View.window.fill(pg.Color("#FFFFFF"))
+		for obj in self.game_objects:
+			surface, position = obj[0].display(), obj[1]
+			View.blit(View.window, surface, position, "center")
+
+	def run(self):
+		self.running = True
+
+		if not(self.on_init()):
+			self.running = False
+
+		while (self.running):
+			self.clock.tick(self.FPS)
+			for event in pg.event.get():
+
+				if event.type == pg.KEYDOWN:
+					if event.key == F10_KEY:
+						View.toggle_fullscreen()
+
+				if event.type == pg.QUIT:
+					self.running = False
+
+				if event.type == pg.MOUSEBUTTONDOWN:
+					self.click_event.throw((Vector(event.pos)))
+
+			self.on_render()
+			self.on_loop()
+

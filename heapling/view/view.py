@@ -17,15 +17,22 @@ POSITIONS = {
 class View:
 
     window : pg.Surface
+    screen_size = (800, 600) # filler values
+    resolution = (800, 600)
 
     @staticmethod
     def init( width=None, height=None ):
         pg.init()
-        if (width is None) and (height is None):
-            infoObject = pg.display.Info()
-            width, height = infoObject.current_w, infoObject.current_h
-        View.window = pg.display.set_mode((width, height))
 
+        infoObject = pg.display.Info()
+        View.screen_size = (infoObject.current_w, infoObject.current_h)
+
+        if (width is None) and (height is None):
+            View.resolution = View.screen_size
+        else:
+            View.resolution = (width, height)
+
+        View.window = pg.display.set_mode(View.resolution, pg.RESIZABLE)
 
     @staticmethod
     def draw_circle(surf: pg.Surface,  pos:Vector, r, color, width=0):
@@ -46,10 +53,17 @@ class View:
         """
         surf_to.blit(surf_from,
                      (
-                         round(position.x - POSITIONS[position_type][0]*surf_from.get_width()/2),
-                         round(position.y - POSITIONS[position_type][1]*surf_from.get_height()/2)
+                         round(position.x + POSITIONS[position_type][0]*surf_from.get_width()/2),
+                         round(position.y + POSITIONS[position_type][1]*surf_from.get_height()/2)
                      ),)
 
     @staticmethod
     def update():
         pg.display.update()
+
+    @staticmethod
+    def toggle_fullscreen():
+        if View.window.get_flags() & pg.FULLSCREEN:
+            pg.display.set_mode(View.resolution)
+        else:
+            pg.display.set_mode(View.screen_size, pg.FULLSCREEN)

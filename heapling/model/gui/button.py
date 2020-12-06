@@ -22,9 +22,7 @@ STYLE = {
 
 def font(font_family: str, font_size: int):
 	try:
-		print(os.path.join("resources", "fonts", font_family + ".ttf"))
 		_font = pg.font.Font(os.path.join("resources", "fonts", font_family + ".ttf"), font_size)
-		print("Found", font_family, font_size)
 		return _font, font_family, font_size
 	except FileNotFoundError:
 		return pg.font.SysFont(STYLE["font-family"], font_size), STYLE["font-family"], font_size
@@ -51,10 +49,10 @@ class Button(GameObject):
 		self.font, self.style["font-family"], self.style["font-size"] = \
 			font(self.style["font-family"], self.style["font-size"])
 
-		self.surface = self.display()[0]
+		self.surface = self.display()
 
 	def is_inside(self, pos: Vector) -> bool:
-		dr = pos - self.position
+		dr = pos - self.position + Vector(self.surface.get_size())/2
 		if (dr.x > 0) and (dr.y > 0) and (dr.x < self.surface.get_width()) and (dr.y < self.surface.get_height()):
 			return True
 		return False
@@ -63,9 +61,11 @@ class Button(GameObject):
 		pass
 
 	def display(self):
-		print(pg.color.Color(self.style["color"]))
-		text_surface = \
-			self.font.render(self.text, True, pg.color.Color(self.style["color"]), pg.color.Color(self.style["background-color"]))
+		text_surface = self.font.render(
+			self.text, True,
+			pg.color.Color(self.style["color"]),
+			pg.color.Color(self.style["background-color"]
+		))
 		box_surface = pg.Surface((
 			text_surface.get_width() + 2 * self.style["border"] + 2 * self.style["padding"],
 			text_surface.get_height() + 2 * self.style["border"] + 2 * self.style["padding"]
@@ -82,7 +82,7 @@ class Button(GameObject):
 			text_surface,
 			(self.style["border"] + self.style["padding"], self.style["border"] + self.style["padding"]
 		))
-		return box_surface, self.position
+		return box_surface
 
 
 if __name__ == "__main__":
