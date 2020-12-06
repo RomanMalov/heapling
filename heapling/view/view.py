@@ -1,26 +1,55 @@
 import pygame as pg
+from utility.vector import Vector
+
+POSITIONS = {
+    "top left":         [0,   0],
+    "top middle":       [-1,  0],
+    "top right":        [-2,  0],
+    "middle left":      [0,  -1],
+    "center":           [-1, -1],
+    "middle right":     [-2, -1],
+    "bottom left":      [0,  -2],
+    "bottom middle":    [-1, -2],
+    "bottom right":     [-2, -2],
+}
 
 
-class View():
+class View:
 
-    def __init__(self, display : pg.Surface):
-        self.display = display
+    window : pg.Surface
 
-    def draw_circle(self, x, y, r, color):
-        pg.draw.circle(self.display, color, (round(x),round(y)), round(r), 1)
+    @staticmethod
+    def init( width=None, height=None ):
+        pg.init()
+        if (width is None) and (height is None):
+            infoObject = pg.display.Info()
+            width, height = infoObject.current_w, infoObject.current_h
+        View.window = pg.display.set_mode((width, height))
 
-    def draw_line(self, x0, y0, x1, y1, color):
-        pg.draw.line(self.display, color, (round(x0), round(y0)), (round(x1), round(y1)))
 
-    def fill_circle(self, x, y, r, color):
-        pg.draw.circle(self.display, color, (round(x),round(y)), r, 0) #if width is zero - it fill the circle
+    @staticmethod
+    def draw_circle(surf: pg.Surface,  pos:Vector, r, color, width=0):
+        pg.draw.circle(surf, color, (round(pos.x),round(pos.y)), round(r), width) #if width is zero - it fills the circle
 
-    def draw_rect(self, x0, y0, x1, y1, color):
-        pg.draw.rect(self.display, color, pg.Rect((round(x0), round(y0)), (round(x1), round(y1))))
+    @staticmethod
+    def draw_line(surf: pg.Surface, r1:Vector, r2:Vector, color):
+        pg.draw.line(surf, color, (round(r1.x), round(r1.y)), (round(r2.x), round(r2.y)))
 
-    def update(self):
-        pg.display.flip()
-        self.display.fill((255,255,255))
+    @staticmethod
+    def draw_rect(surf: pg.Surface, r1:Vector, r2:Vector, color):
+        pg.draw.rect(surf, color, pg.Rect((round(r1.x), round(r1.y)), (round(r2.x-r1.x), round(r2.y-r2.y))))
 
-    def erase(self):
-        pass
+    @staticmethod
+    def blit(surf_to: pg.Surface, surf_from: pg.Surface, position: Vector, position_type="top left"):
+        """
+
+        """
+        surf_to.blit(surf_from,
+                     (
+                         round(position.x - POSITIONS[position_type][0]*surf_from.get_width()/2),
+                         round(position.y - POSITIONS[position_type][1]*surf_from.get_height()/2)
+                     ),)
+
+    @staticmethod
+    def update():
+        pg.display.update()
