@@ -112,7 +112,8 @@ class Wall(PhysicalObject):
 		surf.set_colorkey(KEY)
 		for i in range(len(self.dots) - 1):
 			pygame.draw.line (surf, BLACK, (self.dots[i].x - self.get_cords().x, self.dots[i].y - self.get_cords().y + round(self.height/2)),
-							 (self.dots[i + 1].x - self.get_cords().x, self.dots[i + 1].y - self.get_cords().y + round(self.height/2)))
+							 (self.dots[i + 1].x - self.get_cords().x, self.dots[i + 1].y - self.get_cords().y + round(self.height/2)), 5)
+
 		return surf
 
 	def get_dots(self):

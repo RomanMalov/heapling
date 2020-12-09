@@ -19,6 +19,7 @@ class Scene(GameObject):
 
 	view_point: Vector
 	objects: List[GameObject]
+	time: int
 
 	def __init__(self, view_point: Vector, v: Vector, width, height):
 		self.cords = Vector(0, 0)
@@ -27,6 +28,7 @@ class Scene(GameObject):
 		self.width = width
 		self.height = height
 		self.objects = []
+		self.time = 0
 
 	def append(self, object: GameObject):
 		self.objects.append(object)
@@ -38,37 +40,14 @@ class Scene(GameObject):
 		self.view_point = self.view_point + self.v * dt
 		screen = pygame.Surface((self.width, self.height))
 		pygame.draw.rect(screen, WHITE, (0, 0, 1500, 1000))
-		heap = self.heap
 
-		for object in self.objects:
+		for obj in self.objects:
 
-			if isinstance(object, Dot):
-				dot = object
-				if heap.intersect(dot):
-					self.remove(dot)
-					self.append(self.gen_rnd_dot())
+			if isinstance(obj, Dot):
+				dot_action(obj)
 
-				if dot.get_cords().x<self.view_point.x-dot.get_r():
-					self.remove(dot)
-					self.append(self.gen_rnd_dot())
-
-			if isinstance(object, Wall):
-				wall = object
-				heap_x_l = heap.get_cords().x - heap.get_r()
-				heap_x_r = heap.get_cords().x + heap.get_r()
-				wall_x_l = wall.get_cords().x
-				wall_x_r = wall.get_cords().x + wall.width
-				if 	(heap_x_l - wall_x_l) * (heap_x_l - wall_x_r) < 0 or (heap_x_r - wall_x_l) * (heap_x_r - wall_x_r) < 0 or heap_x_l - wall_x_l < 0 and heap_x_r - wall_x_r > 0:
-					heap.collide(wall, dt)
-				surface = wall.display()
-				screen.blit(surface, (wall_x_l - self.view_point.x, wall.get_cords().y - round(wall.height/2) - self.view_point.y))
-				if wall_x_r-self.view_point.x < 0:
-					delta = round(self.width/(WALLS_COUNT-1))
-					self.remove(wall)
-					wall = Wall(Vector(self.walls_num//2*delta, wall.get_cords().y), Vector((self.walls_num//2 + 1)*delta, wall.get_cords().y), 3, 3, AMPLITUDE)
-					self.append(wall)
-					wall.step(random())
-					self.walls_num += 1
+			if isinstance(obj, Wall):
+				
 			else:
 				object.step(dt)
 				surface = object.display()
@@ -114,6 +93,41 @@ class Scene(GameObject):
 						return self.gen_rnd_dot()
 
 		return dot
+
+	def on_die()
+		pass
+
+	def dot_action(dot: Dot):
+		heap = self.heap
+		if heap.intersect(dot):
+			self.remove(dot)
+			self.append(self.gen_rnd_dot())
+
+		if dot.get_cords().x<self.view_point.x-dot.get_r():
+			self.remove(dot)
+			self.append(self.gen_rnd_dot())
+
+	def wall_action(wall: Wall):
+		heap = self.heap
+		heap_x_l = heap.get_cords().x - heap.get_r()
+		heap_x_r = heap.get_cords().x + heap.get_r()
+		wall_x_l = wall.get_cords().x
+		wall_x_r = wall.get_cords().x + wall.width
+		if 	(heap_x_l - wall_x_l) * (heap_x_l - wall_x_r) < 0 or (heap_x_r - wall_x_l) * (heap_x_r - wall_x_r) < 0 or heap_x_l - wall_x_l < 0 and heap_x_r - wall_x_r > 0:
+			heap.collide(wall, dt)
+		surface = wall.display()
+		screen.blit(surface, (wall_x_l - self.view_point.x, wall.get_cords().y - round(wall.height/2) - self.view_point.y))
+		if wall_x_r-self.view_point.x < 0:
+			delta = round(self.width/(WALLS_COUNT-1))
+			self.remove(wall)
+			wall = Wall(Vector(self.walls_num//2*delta, wall.get_cords().y), Vector((self.walls_num//2 + 1)*delta, wall.get_cords().y), 3, 3, AMPLITUDE)
+			self.append(wall)
+			wall.step(random())
+			self.walls_num += 1
+
+
+	def get_points() -> int:
+		return self.time//100
 		
 
 	def get_cords(self):
