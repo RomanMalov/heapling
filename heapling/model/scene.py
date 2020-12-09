@@ -41,17 +41,20 @@ class Scene(GameObject):
 		screen = pygame.Surface((self.width, self.height))
 		pygame.draw.rect(screen, WHITE, (0, 0, 1500, 1000))
 
+		if self.heap.dead(self.view_point.x):
+			self.on_die()
+
 		for obj in self.objects:
 
 			if isinstance(obj, Dot):
-				dot_action(obj)
+				self.dot_action(obj)
 
 			if isinstance(obj, Wall):
-				
+				self.wall_action(obj, dt, screen)
 			else:
-				object.step(dt)
-				surface = object.display()
-				pos = object.get_cords() - self.view_point - Vector(surface.get_width(),surface.get_height())/2
+				obj.step(dt)
+				surface = obj.display()
+				pos = obj.get_cords() - self.view_point - Vector(surface.get_width(),surface.get_height())/2
 				screen.blit(surface, (pos.x, pos.y))
 			#pygame.draw.circle(screen, (0, 255, 0), (round(object.get_cords()[0]),round(object.get_cords()[1])), 10)
 		return screen
@@ -94,10 +97,10 @@ class Scene(GameObject):
 
 		return dot
 
-	def on_die()
-		pass
+	def on_die(self):
+		print("DEAD")
 
-	def dot_action(dot: Dot):
+	def dot_action(self, dot: Dot):
 		heap = self.heap
 		if heap.intersect(dot):
 			self.remove(dot)
@@ -107,7 +110,7 @@ class Scene(GameObject):
 			self.remove(dot)
 			self.append(self.gen_rnd_dot())
 
-	def wall_action(wall: Wall):
+	def wall_action(self, wall: Wall, dt, screen):
 		heap = self.heap
 		heap_x_l = heap.get_cords().x - heap.get_r()
 		heap_x_r = heap.get_cords().x + heap.get_r()
@@ -126,7 +129,7 @@ class Scene(GameObject):
 			self.walls_num += 1
 
 
-	def get_points() -> int:
+	def get_points(self) -> int:
 		return self.time//100
 		
 

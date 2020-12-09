@@ -89,6 +89,12 @@ class Heap(PhysicalObject):
 		a = glob_force/self.m
 		self.v += a * dt
 		self.w += beta * dt
+		
+	def dead(self, death_x):
+		for dot in self.dots:
+			if dot.get_cords().x > death_x - dot.get_r():
+				return False
+		return True
 
 	def append(self, dot):
 		dot_m = dot.get_m()
