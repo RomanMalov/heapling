@@ -18,7 +18,8 @@ i = -1
 while not finished:
     i += 1
     clock.tick(FPS)
-    screen.blit(scene.step(1/FPS), (scene.get_cords().x, scene.get_cords().y))
+    scene.step(1/FPS)
+    screen.blit(scene.display(), (scene.get_cords().x, scene.get_cords().y))
     pygame.display.update()
     if i==10:
         scene.heap_jump()

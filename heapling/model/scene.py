@@ -38,8 +38,6 @@ class Scene(GameObject):
 
 	def step(self, dt):
 		self.view_point = self.view_point + self.v * dt
-		screen = pygame.Surface((self.width, self.height))
-		pygame.draw.rect(screen, WHITE, (0, 0, 1500, 1000))
 
 		if self.heap.dead(self.view_point.x):
 			self.on_die()
@@ -50,14 +48,10 @@ class Scene(GameObject):
 				self.dot_action(obj)
 
 			if isinstance(obj, Wall):
-				self.wall_action(obj, dt, screen)
+				self.wall_action(obj, dt)
 			else:
 				obj.step(dt)
-				surface = obj.display()
-				pos = obj.get_cords() - self.view_point - Vector(surface.get_width(),surface.get_height())/2
-				screen.blit(surface, (pos.x, pos.y))
-			#pygame.draw.circle(screen, (0, 255, 0), (round(object.get_cords()[0]),round(object.get_cords()[1])), 10)
-		return screen
+
 
 	def start(self):
 		delta = round(self.width/(WALLS_COUNT-1))
@@ -97,6 +91,20 @@ class Scene(GameObject):
 
 		return dot
 
+	def display(self):
+		screen = pygame.Surface((self.width, self.height))
+		pygame.draw.rect(screen, WHITE, (0, 0, 1500, 1000))
+		for obj in self.objects:
+			if isinstance(obj, Wall):
+				wall = obj
+				surface = wall.display()
+				screen.blit(surface, (wall.get_cords().x - self.view_point.x, wall.get_cords().y - round(wall.height/2) - self.view_point.y))
+			else:
+				surface = obj.display()
+				pos = obj.get_cords() - self.view_point - Vector(surface.get_width(),surface.get_height())/2
+				screen.blit(surface, (pos.x, pos.y))
+		return screen
+
 	def on_die(self):
 		print("DEAD")
 
@@ -110,7 +118,7 @@ class Scene(GameObject):
 			self.remove(dot)
 			self.append(self.gen_rnd_dot())
 
-	def wall_action(self, wall: Wall, dt, screen):
+	def wall_action(self, wall: Wall, dt):
 		heap = self.heap
 		heap_x_l = heap.get_cords().x - heap.get_r()
 		heap_x_r = heap.get_cords().x + heap.get_r()
@@ -118,8 +126,6 @@ class Scene(GameObject):
 		wall_x_r = wall.get_cords().x + wall.width
 		if 	(heap_x_l - wall_x_l) * (heap_x_l - wall_x_r) < 0 or (heap_x_r - wall_x_l) * (heap_x_r - wall_x_r) < 0 or heap_x_l - wall_x_l < 0 and heap_x_r - wall_x_r > 0:
 			heap.collide(wall, dt)
-		surface = wall.display()
-		screen.blit(surface, (wall_x_l - self.view_point.x, wall.get_cords().y - round(wall.height/2) - self.view_point.y))
 		if wall_x_r-self.view_point.x < 0:
 			delta = round(self.width/(WALLS_COUNT-1))
 			self.remove(wall)
