@@ -1,8 +1,6 @@
 from controller import Controller
 from event import Event
 
-from view.view import View
-
 from model.dot import Dot
 from model.heap import Heap
 from model.wall import Wall
@@ -39,7 +37,6 @@ class TestController(Controller):
 
     def on_init(self)->bool:
         self.view.draw_rect(0, 0, 794, 1123, WHITE)
-        self.wall.display(self.view)
         return True
 
     def on_loop(self):
@@ -47,7 +44,7 @@ class TestController(Controller):
 
     def on_render(self):
         for elem in self.gameObjects:
-            elem.display(self.view)
+            elem.display()
         self.view.update()
 
     def execute(self):

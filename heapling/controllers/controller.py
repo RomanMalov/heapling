@@ -1,7 +1,8 @@
-class Controller():
+
+class Controller:
 
     def on_init(self):
         pass
 
-    def execute(self):
+    def run(self):
         pass

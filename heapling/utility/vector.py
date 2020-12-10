@@ -37,12 +37,19 @@ class Vector:
 	def y(self):
 		return self._vector[1]
 
+	@x.setter
+	def x(self, x):
+		self._vector[0] = x
+
+	@y.setter
+	def y(self, y):
+		self._vector[1] = y
+
 	def __str__(self):
 		return "Vector"+self._vector.__str__()
 
-	def __iter__(self):
-		return self.x, self.y
-
+	def __getitem__(self, item):
+		return self._vector[item]
 
 	# noinspection PyTypeChecker
 	def _apply_operation(self, operation, value=None):
