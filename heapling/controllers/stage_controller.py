@@ -22,14 +22,15 @@ class StageController(Controller):
 
 	def on_init(self):
 		self.scene = Scene(Vector(0, 0), Vector(70,0), View.resolution[0], View.resolution[1])
+		self.scene.start()
 		return True
 
 	def on_render(self):
-		View.blit(View.window, self.scene.display(), Vector(0,0), "top left")
+		View.blit(View.window, self.scene.display(), self.scene.get_cords(), "top left")
 		View.update()
 
 	def on_loop(self):
-		self.scene.step(0.001 * self.FPS)
+		self.scene.step(1/self.FPS)
 
 	def run(self):
 		self.running = True
@@ -41,6 +42,7 @@ class StageController(Controller):
 			self.clock.tick(self.FPS)
 
 			self.on_render()
+			self.on_loop()
 
 			for event in pg.event.get():
 
@@ -50,6 +52,9 @@ class StageController(Controller):
 
 					if event.key == pg.K_SPACE:
 						self.scene.heap_jump()
+
+					if event.key == pg.K_ESCAPE:
+						self.running = False
 
 				if event.type == pg.QUIT:
 					self.running = False
