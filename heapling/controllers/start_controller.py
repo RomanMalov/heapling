@@ -1,24 +1,26 @@
 from controllers.controller import Controller
 from controllers.event import Event
+from controllers.stage_controller import StageController
 
-from utility.vector import Vector
+from model.gui.button import Button
+from model.gui.image import Image
 
 from view.view import View
 import pygame as pg
 
-from model.gui.button import Button
-from model.gui.image import Image
-from model.gameobject import GameObject
-
-from typing import List
+from utility.vector import Vector
 
 F10_KEY = 291
+
 
 class StartController(Controller):
 
 	def __init__(self, width=None, height=None):
 
 		View.init(width, height)
+
+		self.stage_controller = StageController()
+
 		self.clock = pg.time.Clock()
 		self.FPS = 30
 
@@ -35,18 +37,25 @@ class StartController(Controller):
 		))
 
 		style = {"font-family": "SpaceInvaders", "font-size": 20}
+		that = self
 
 		pos1 = Vector(View.window.get_width() / 2, View.window.get_height() / 2 - 100)
-		self.game_objects.append((Button("Play the game", pos1, style), pos1))
+		play_button = Button("Play the game", pos1, style)
+		self.game_objects.append((play_button, pos1))
+
+		def play_button_func(pos: Vector):
+			if play_button.is_inside(pos):
+				self.stage_controller.run()
+				that.running = False
+
+		self.click_event.addHandler(play_button_func)
 
 		pos2 = Vector(View.window.get_width() / 2, View.window.get_height() / 2 + 100)
 		self.game_objects.append((Button("Options", pos2, style), pos2))
 
 		pos3 = Vector(View.window.get_width() / 2, View.window.get_height() / 2 + 300)
-		quit_button = Button("Quit your hopeless actions",pos3, style)
+		quit_button = Button("Quit your hopeless actions", pos3, style)
 		self.game_objects.append((quit_button, pos3))
-
-		that = self
 
 		def quit_button_func(pos: Vector):
 			if quit_button.is_inside(pos):
@@ -72,8 +81,12 @@ class StartController(Controller):
 		if not(self.on_init()):
 			self.running = False
 
-		while (self.running):
+		while self.running:
 			self.clock.tick(self.FPS)
+
+			self.on_render()
+			self.on_loop()
+
 			for event in pg.event.get():
 
 				if event.type == pg.KEYDOWN:
@@ -85,7 +98,3 @@ class StartController(Controller):
 
 				if event.type == pg.MOUSEBUTTONDOWN:
 					self.click_event.throw((Vector(event.pos)))
-
-			self.on_render()
-			self.on_loop()
-
