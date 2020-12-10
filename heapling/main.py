@@ -7,7 +7,7 @@ screen = pygame.display.set_mode((1500, 1000))
 surface = pygame.Surface((1500, 1000))
 FPS = 50
 
-scene = Scene(Vector(0, 0), Vector(70,0), 1500, 1000)
+scene = Scene(Vector(0, 0), Vector(110,0), 1500, 1000)
 scene.start()
 
 clock = pygame.time.Clock()
@@ -18,7 +18,8 @@ i = -1
 while not finished:
     i += 1
     clock.tick(FPS)
-    screen.blit(scene.step(0.001 * FPS), (scene.get_cords().x, scene.get_cords().y))
+    scene.step(1/FPS)
+    screen.blit(scene.display(), (scene.get_cords().x, scene.get_cords().y))
     pygame.display.update()
     if i==10:
         scene.heap_jump()

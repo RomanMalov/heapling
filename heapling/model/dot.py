@@ -1,6 +1,7 @@
 import math, pygame
 from model.physicalobject import PhysicalObject
 from utility.vector import Vector
+from model.wall import Wall
 
 
 KEY = (0, 0, 0)
@@ -35,6 +36,13 @@ class Dot(PhysicalObject):
 
 	def get_m(self):
 		return self.r*self.r
+
+	def collide(self, wall : Wall):
+		points = wall.get_dots()
+		for point in points:
+			if abs(point - self.get_cords()) < self.r:
+				return True
+		return False
 
 	def get_I(self):
 		return 1/2*self.get_m()*self.r**2
