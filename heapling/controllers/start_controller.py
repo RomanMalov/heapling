@@ -82,7 +82,7 @@ class StartController(Controller):
 
 		theme = pg.mixer.Sound(os.path.join("resources", "sounds", "theme.wav"))
 		theme.set_volume(0.5)
-		theme.play()
+		theme.play(10)
 
 		if not(self.on_init()):
 			self.running = False

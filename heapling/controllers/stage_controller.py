@@ -72,7 +72,7 @@ class StageController(Controller):
 
 	def on_loop(self):
 		self.scene.step(1/self.FPS)
-		self.score.text.set_text(str(10))
+		self.score.text.set_text(str(self.scene.get_points()))
 
 	def run(self):
 		self.running = True

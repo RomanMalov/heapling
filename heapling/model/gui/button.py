@@ -64,7 +64,7 @@ class Button(GameObject):
 		return self.position - Vector(self.surface.get_size())/2
 
 	def display(self):
-		return self.surface
+		return self._make_surface()
 
 	# Private methods
 

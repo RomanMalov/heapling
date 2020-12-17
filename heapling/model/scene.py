@@ -140,11 +140,8 @@ class Scene(GameObject):
 			wall.step(random())
 			self.walls_num += 1
 
-
 	def get_points(self) -> int:
-		return self.time//100
-
-		
+		return round(self.time*5)
 
 	def get_cords(self):
 		return self.cords
