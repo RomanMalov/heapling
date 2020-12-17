@@ -37,6 +37,8 @@ class Scene(GameObject):
 		self.objects.remove(object)
 
 	def step(self, dt):
+		self.time += dt
+
 		self.view_point = self.view_point + self.v * dt
 
 		if self.heap.dead(self.view_point.x):
@@ -108,9 +110,13 @@ class Scene(GameObject):
 	def on_die(self):
 		print("DEAD")
 
+	def dot_acted(self):
+		pass
+
 	def dot_action(self, dot: Dot):
 		heap = self.heap
 		if heap.intersect(dot):
+			self.dot_acted()
 			self.remove(dot)
 			self.append(self.gen_rnd_dot())
 
@@ -137,6 +143,7 @@ class Scene(GameObject):
 
 	def get_points(self) -> int:
 		return self.time//100
+
 		
 
 	def get_cords(self):

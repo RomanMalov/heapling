@@ -5,15 +5,21 @@ from controllers.stage_controller import StageController
 from model.gui.button import Button
 from model.gui.image import Image
 
+from model.gameobject import GameObject
+
 from view.view import View
 import pygame as pg
+import os
 
 from utility.vector import Vector
+from typing import List
 
 F10_KEY = 291
 
 
 class StartController(Controller):
+
+	game_objects: List[GameObject]
 
 	def __init__(self, width=None, height=None):
 
@@ -29,17 +35,16 @@ class StartController(Controller):
 
 	def on_init(self):
 
-		self.game_objects.append((
+		self.game_objects.append(
 			Image(Vector(View.window.get_width() / 2, 200), "title.png", 0.25),
-			Vector(View.window.get_width() / 2, 200)
-		))
+		)
 
 		style = {"font-family": "SpaceInvaders", "font-size": 20}
 		that = self
 
 		pos1 = Vector(View.window.get_width() / 2, View.window.get_height() / 2)
 		play_button = Button("Play the game", pos1, style)
-		self.game_objects.append((play_button, pos1))
+		self.game_objects.append(play_button)
 
 		def play_button_func(pos: Vector):
 			if play_button.is_inside(pos):
@@ -53,7 +58,7 @@ class StartController(Controller):
 
 		pos3 = Vector(View.window.get_width() / 2, View.window.get_height() / 2 + 300)
 		quit_button = Button("Quit your hopeless actions", pos3, style)
-		self.game_objects.append((quit_button, pos3))
+		self.game_objects.append(quit_button)
 
 		def quit_button_func(pos: Vector):
 			if quit_button.is_inside(pos):
@@ -70,11 +75,14 @@ class StartController(Controller):
 		View.update()
 		View.window.fill(pg.Color("#FFFFFF"))
 		for obj in self.game_objects:
-			surface, position = obj[0].display(), obj[1]
-			View.blit(View.window, surface, position, "center")
+			View.blit(View.window, obj.display(), obj.get_cords(), "top left")
 
 	def run(self):
 		self.running = True
+
+		theme = pg.mixer.Sound(os.path.join("resources", "sounds", "theme.wav"))
+		theme.set_volume(0.5)
+		theme.play()
 
 		if not(self.on_init()):
 			self.running = False

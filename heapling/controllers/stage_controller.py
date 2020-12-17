@@ -2,6 +2,7 @@ from controllers.controller import Controller
 from controllers.event import Event
 
 from model.gui.image import Image
+from model.gui.button import Button, SPACE_STYLE
 from model.scene import Scene
 from model.gameobject import GameObject
 
@@ -36,6 +37,12 @@ class StageController(Controller):
 		self.scene.start()
 		self.game_objects.append(self.scene)
 
+		box = Button("Score", Vector(100,100), SPACE_STYLE)
+		self.game_objects.append(box)
+
+		self.score = Button(str(2), Vector(100,150), SPACE_STYLE)
+		self.game_objects.append(self.score)
+
 		gameover_image = Image(Vector(View.resolution)/2, "gameover.png", 0.5)
 		sound = pg.mixer.Sound(os.path.join(SOUND_ROOT, "gameover.wav"))
 
@@ -45,7 +52,6 @@ class StageController(Controller):
 			self.game_objects.append(gameover_image)
 			pg.time.set_timer(that.GAMEOVER_EVENT, 2000)
 			that.scene.on_die = lambda : None
-			pass
 
 		def on_gameover_end():
 			pg.time.set_timer(that.GAMEOVER_EVENT, 0)
@@ -58,12 +64,15 @@ class StageController(Controller):
 		return True
 
 	def on_render(self):
+		View.blit(View.window, self.score.display(), Vector(200, 200), "top left")
+		print(self.score.display().get_size())
 		for obj in self.game_objects:
 			View.blit(View.window, obj.display(), obj.get_cords(), "top left")
 		View.update()
 
 	def on_loop(self):
 		self.scene.step(1/self.FPS)
+		self.score.text.set_text(str(10))
 
 	def run(self):
 		self.running = True
@@ -72,6 +81,8 @@ class StageController(Controller):
 			self.running = False
 
 		jump_sound = pg.mixer.Sound(os.path.join(SOUND_ROOT, "jump.wav"))
+		hit_sound = pg.mixer.Sound(os.path.join(SOUND_ROOT, "join.wav"))
+		self.scene.dot_acted = lambda : hit_sound.play()
 
 		while self.running:
 			self.clock.tick(self.FPS)
