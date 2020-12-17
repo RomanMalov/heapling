@@ -32,26 +32,25 @@ class StartController(Controller):
 	def on_init(self):
 
 		self.game_objects.append((
-			Image("title.png", 0.25),
+			Image(Vector(View.window.get_width() / 2, 200), "title.png", 0.25),
 			Vector(View.window.get_width() / 2, 200)
 		))
 
 		style = {"font-family": "SpaceInvaders", "font-size": 20}
 		that = self
 
-		pos1 = Vector(View.window.get_width() / 2, View.window.get_height() / 2 - 100)
+		pos1 = Vector(View.window.get_width() / 2, View.window.get_height() / 2)
 		play_button = Button("Play the game", pos1, style)
 		self.game_objects.append((play_button, pos1))
 
 		def play_button_func(pos: Vector):
 			if play_button.is_inside(pos):
 				self.stage_controller.run()
-				that.running = False
 
 		self.click_event.addHandler(play_button_func)
 
-		pos2 = Vector(View.window.get_width() / 2, View.window.get_height() / 2 + 100)
-		self.game_objects.append((Button("Options", pos2, style), pos2))
+		# pos2 = Vector(View.window.get_width() / 2, View.window.get_height() / 2 + 100)
+		# self.game_objects.append((Button("Options", pos2, style), pos2))
 
 		pos3 = Vector(View.window.get_width() / 2, View.window.get_height() / 2 + 300)
 		quit_button = Button("Quit your hopeless actions", pos3, style)

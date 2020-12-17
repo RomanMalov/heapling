@@ -19,9 +19,16 @@ class View:
     window : pg.Surface
     screen_size = (800, 600) # filler values
     resolution = (800, 600)
+    is_init = False
 
     @staticmethod
     def init( width=None, height=None ):
+        if View.is_init:
+            return 0
+        View.is_init = True
+
+        pg.mixer.pre_init(44100, -16, 2, 512)
+        pg.mixer.init()
         pg.init()
 
         infoObject = pg.display.Info()
