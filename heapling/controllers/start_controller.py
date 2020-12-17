@@ -19,8 +19,6 @@ class StartController(Controller):
 
 		View.init(width, height)
 
-		self.stage_controller = StageController()
-
 		self.clock = pg.time.Clock()
 		self.FPS = 30
 
@@ -45,7 +43,8 @@ class StartController(Controller):
 
 		def play_button_func(pos: Vector):
 			if play_button.is_inside(pos):
-				self.stage_controller.run()
+				stage_controller = StageController()
+				stage_controller.run()
 
 		self.click_event.addHandler(play_button_func)
 
